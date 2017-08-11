@@ -150,7 +150,8 @@ var _ = {},
     "disable_cookie": false,
     "secure_cookie": false,
     "ip": true,
-    "property_blacklist": []
+    "property_blacklist": [],
+    "track_sequence_numbers": false
 },
     DOM_LOADED = false;
 
@@ -2510,7 +2511,7 @@ AloomaLib.prototype.track = function (event_name, properties, callback) {
     // properties object by passing in a new object
 
     // update properties with pageview info and super-properties
-    properties = _.extend({}, _.info.properties(), this['persistence'].properties(), properties, _.info.sequence_number(this.__events_tracked));
+    properties = _.extend({}, _.info.properties(), this['persistence'].properties(), properties);
 
     var property_blacklist = this.get_config('property_blacklist');
     if (_.isArray(property_blacklist)) {
@@ -2519,6 +2520,10 @@ AloomaLib.prototype.track = function (event_name, properties, callback) {
         });
     } else {
         console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+    }
+
+    if (this.get_config('track_sequence_numbers')) {
+        properties = _.extend(properties, _.info.sequence_number(this.__events_tracked));
     }
 
     var data = {
@@ -2577,7 +2582,7 @@ AloomaLib.prototype.track_custom_event = function (event_object, callback) {
 
     // update properties with pageview info and super-properties
 
-    properties = _.extend({}, _.info.properties(), this['persistence'].properties(), properties, _.info.sequence_number(this.__events_tracked));
+    properties = _.extend({}, _.info.properties(), this['persistence'].properties(), properties);
 
     var property_blacklist = this.get_config('property_blacklist');
     if (_.isArray(property_blacklist)) {
@@ -2586,6 +2591,10 @@ AloomaLib.prototype.track_custom_event = function (event_object, callback) {
         });
     } else {
         console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+    }
+
+    if (this.get_config('track_sequence_numbers')) {
+        properties = _.extend(properties, _.info.sequence_number(this.__events_tracked));
     }
 
     var data = event_object || {};

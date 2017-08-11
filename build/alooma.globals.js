@@ -96,6 +96,7 @@
             , "secure_cookie":          false
             , "ip":                     true
             , "property_blacklist":     []
+            , "track_sequence_numbers": false
         };
     var DOM_LOADED = false;
     // UNDERSCORE
@@ -2406,7 +2407,6 @@
             , _.info.properties()
             , this['persistence'].properties()
             , properties
-    				, _.info.sequence_number(this.__events_tracked)
         );
 
         var property_blacklist = this.get_config('property_blacklist');
@@ -2416,6 +2416,13 @@
             });
         } else {
             console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+        }
+
+        if (this.get_config('track_sequence_numbers')) {
+          properties = _.extend(
+              properties
+              , _.info.sequence_number(this.__events_tracked)
+          );
         }
 
         var data = {
@@ -2479,7 +2486,6 @@
               , _.info.properties()
               , this['persistence'].properties()
               , properties
-              , _.info.sequence_number(this.__events_tracked)
           );
 
           var property_blacklist = this.get_config('property_blacklist');
@@ -2489,6 +2495,13 @@
               });
           } else {
               console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+          }
+
+          if (this.get_config('track_sequence_numbers')) {
+            properties = _.extend(
+                properties
+                , _.info.sequence_number(this.__events_tracked)
+            );
           }
 
           var data = event_object || {};

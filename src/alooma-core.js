@@ -119,6 +119,7 @@ var   _ = {}
         , "secure_cookie":          false
         , "ip":                     true
         , "property_blacklist":     []
+        , "track_sequence_numbers": false
     }
     , DOM_LOADED = false;
 
@@ -2430,7 +2431,6 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
         , _.info.properties()
         , this['persistence'].properties()
         , properties
-				, _.info.sequence_number(this.__events_tracked)
     );
 
     var property_blacklist = this.get_config('property_blacklist');
@@ -2440,6 +2440,13 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
         });
     } else {
         console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+    }
+
+    if (this.get_config('track_sequence_numbers')) {
+      properties = _.extend(
+          properties
+          , _.info.sequence_number(this.__events_tracked)
+      );
     }
 
     var data = {
@@ -2503,7 +2510,6 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
           , _.info.properties()
           , this['persistence'].properties()
           , properties
-          , _.info.sequence_number(this.__events_tracked)
       );
 
       var property_blacklist = this.get_config('property_blacklist');
@@ -2513,6 +2519,13 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
           });
       } else {
           console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+      }
+
+      if (this.get_config('track_sequence_numbers')) {
+        properties = _.extend(
+            properties
+            , _.info.sequence_number(this.__events_tracked)
+        );
       }
 
       var data = event_object || {};
