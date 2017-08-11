@@ -461,6 +461,23 @@ mpmodule("alooma.track");
         same(data.properties.$screen_width, screen.width);
     });
 
+    test("should not track event sequence numbers by default", 1, function() {
+        var data = alooma.test.track('test', {});
+        isUndefined(data.properties.$sequence, "This property is by default off.");
+    });
+
+    test("should track event sequence numbers when enabled", 3, function() {
+        alooma.test.set_config({'track_sequence_numbers': true});
+        var data = alooma.test.track('test', {});
+        same(data.properties.$sequence, "0", "First event is event 0.");
+
+        data = alooma.test.track_custom_event({'test': 1});
+        same(data.properties.$sequence, "1", "Second event is event 1.");
+
+        data = alooma.test.track('test', {});
+        same(data.properties.$sequence, "2", "Third event is event 2.");
+    });
+
 mpmodule("alooma.time_event", function () {
     this.clock = sinon.useFakeTimers();
 }, function () {

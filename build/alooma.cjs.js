@@ -96,6 +96,7 @@ var DEFAULT_CONFIG = {
         , "secure_cookie":          false
         , "ip":                     true
         , "property_blacklist":     []
+        , "track_sequence_numbers": false
     };
 var DOM_LOADED = false;
 // UNDERSCORE
@@ -1420,7 +1421,14 @@ _.info = {
             , 'mp_browser': _.info.browser(userAgent, navigator.vendor, window.opera)
             , 'mp_platform': _.info.os()
         });
+    },
+
+    sequence_number: function(num_events_tracked) {
+      return _.strip_empty_properties({
+        '$sequence': num_events_tracked.toString()
+      });
     }
+
 };
 
 // Console override
@@ -2121,6 +2129,7 @@ AloomaLib.prototype._init = function(token, config, name) {
     this.__dom_loaded_queue = [];
     this.__request_queue = [];
     this.__disabled_events = [];
+    this.__events_tracked = 0;
     this._flags = {
           "disable_all_events": false
         , "identify_called": false
@@ -2409,6 +2418,13 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
         console.error('Invalid value for property_blacklist config: ' + property_blacklist);
     }
 
+    if (this.get_config('track_sequence_numbers')) {
+      properties = _.extend(
+          properties
+          , _.info.sequence_number(this.__events_tracked)
+      );
+    }
+
     var data = {
           'event': event_name
         , 'properties': properties
@@ -2426,6 +2442,8 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
         { 'data': encoded_data },
         this._prepare_callback(callback, truncated_data)
     );
+
+    this.__events_tracked++;
 
     return truncated_data;
 };
@@ -2479,6 +2497,13 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
           console.error('Invalid value for property_blacklist config: ' + property_blacklist);
       }
 
+      if (this.get_config('track_sequence_numbers')) {
+        properties = _.extend(
+            properties
+            , _.info.sequence_number(this.__events_tracked)
+        );
+      }
+
       var data = event_object || {};
       data['properties'] = properties;
 
@@ -2494,6 +2519,8 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
           { 'data': encoded_data },
           this._prepare_callback(callback, truncated_data)
       );
+
+      this.__events_tracked++;
 
       return truncated_data;
     };
