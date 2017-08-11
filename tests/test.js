@@ -1001,6 +1001,18 @@ mpmodule("alooma");
         }
     });
 
+mpmodule("request properties");
+
+    test("request properties included", 1, function() {
+        var props = { 'a': 'b', 'c': 'd' };
+        alooma.test.register_request(props);
+
+        var data = alooma.test.track('test');
+        var dp = data.properties;
+
+        ok(contains_obj(dp, props), 'request properties included correctly');
+    });
+
 mpmodule("super properties");
 
     var get_props_without_distinct_id = function(instance) {

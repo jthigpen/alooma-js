@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var alooma = __webpack_require__(1);
 
@@ -57,9 +57,9 @@
 	alooma.track('Tracking after alooma.init');
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	(function (global, factory) {
 	     true ? module.exports = factory() :
@@ -2194,6 +2194,7 @@
 	        };
 
 	        this['persistence'] = this['cookie'] = new AloomaPersistence(this['config']);
+	        this['__request_properties'] = {}
 	        this.register_once({'distinct_id': _.UUID()}, "");
 	    };
 
@@ -2464,6 +2465,7 @@
 	            {}
 	            , _.info.properties()
 	            , this['persistence'].properties()
+	            , this['__request_properties']
 	            , properties
 	        );
 
@@ -2534,6 +2536,7 @@
 	              {}
 	              , _.info.properties()
 	              , this['persistence'].properties()
+	              , this['__request_properties']
 	              , properties
 	          );
 
@@ -2669,6 +2672,50 @@
 	        }
 
 	        this['persistence'].set_event_timer(event_name,  new Date().getTime());
+	    };
+
+	    /**
+	     * Register a set of super properties, which are included with all
+	     * events. This will overwrite previous super property values.
+	     *
+	     * ### Usage:
+	     *
+	     *     // register "Gender" as a super property
+	     *     alooma.register({'Gender': 'Female'});
+	     *
+	     *     // register several super properties when a user signs up
+	     *     alooma.register({
+	     *         'Email': 'jdoe@example.com',
+	     *         'Account Type': 'Free'
+	     *     });
+	     *
+	     * @param {Object} properties An associative array of properties to store about the user
+	     * @param {Number} [days] How many days since the user's last visit to store the super properties
+	     */
+	    AloomaLib.prototype.register = function(props, days) {
+	        this['persistence'].register(props, days);
+	    };
+
+	    /**
+	     * Register a set of request properties, which are included with all
+	     * events for this particular http request. This will overwrite previous request property
+	     * values. Request properties are reset on every library init.
+	     *
+	     * These properties are added to every tracked event on this particular DOM load. These 
+	     * properties do not span requests.
+	     *
+	     * ### Usage:
+	     *
+	     *     // register unique "Request ID" as a request property
+	     *     alooma.register_request({'Request-ID': 'abc123'});
+	     *
+	     * @param {Object} properties An associative array of properties to store 
+	     */
+	    AloomaLib.prototype.register_request = function(props) {
+	        this['__request_properties'] = _.extend(
+	            this['__request_properties']
+	            , props
+	        );
 	    };
 
 	    /**
@@ -4901,5 +4948,5 @@
 
 	}));
 
-/***/ }
+/***/ })
 /******/ ]);
