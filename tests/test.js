@@ -461,6 +461,17 @@ mpmodule("alooma.track");
         same(data.properties.$screen_width, screen.width);
     });
 
+    test("should send event sequence number", 3, function() {
+        var data = alooma.test.track('test', {});
+        same(data.properties.$sequence, "0");
+
+        data = alooma.test.track_custom_event({'test': 1});
+        same(data.properties.$sequence, "1");
+
+        data = alooma.test.track('test', {});
+        same(data.properties.$sequence, "2");
+    });
+
 mpmodule("alooma.time_event", function () {
     this.clock = sinon.useFakeTimers();
 }, function () {

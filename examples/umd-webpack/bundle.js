@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var alooma = __webpack_require__(1);
 
@@ -57,9 +57,9 @@
 	alooma.track('Tracking after alooma.init');
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	(function (global, factory) {
 	     true ? module.exports = factory() :
@@ -1487,7 +1487,14 @@
 	                , 'mp_browser': _.info.browser(userAgent, navigator.vendor, window.opera)
 	                , 'mp_platform': _.info.os()
 	            });
+	        },
+
+	        sequence_number: function(num_events_tracked) {
+	          return _.strip_empty_properties({
+	            '$sequence': num_events_tracked.toString()
+	          });
 	        }
+
 	    };
 
 	    // Console override
@@ -2188,6 +2195,7 @@
 	        this.__dom_loaded_queue = [];
 	        this.__request_queue = [];
 	        this.__disabled_events = [];
+	        this.__events_tracked = 0;
 	        this._flags = {
 	              "disable_all_events": false
 	            , "identify_called": false
@@ -2465,6 +2473,7 @@
 	            , _.info.properties()
 	            , this['persistence'].properties()
 	            , properties
+	    				, _.info.sequence_number(this.__events_tracked)
 	        );
 
 	        var property_blacklist = this.get_config('property_blacklist');
@@ -2493,6 +2502,8 @@
 	            { 'data': encoded_data },
 	            this._prepare_callback(callback, truncated_data)
 	        );
+
+	        this.__events_tracked++;
 
 	        return truncated_data;
 	    };
@@ -2535,6 +2546,7 @@
 	              , _.info.properties()
 	              , this['persistence'].properties()
 	              , properties
+	              , _.info.sequence_number(this.__events_tracked)
 	          );
 
 	          var property_blacklist = this.get_config('property_blacklist');
@@ -2561,6 +2573,8 @@
 	              { 'data': encoded_data },
 	              this._prepare_callback(callback, truncated_data)
 	          );
+
+	          this.__events_tracked++;
 
 	          return truncated_data;
 	        };
@@ -4901,5 +4915,5 @@
 
 	}));
 
-/***/ }
+/***/ })
 /******/ ]);
